@@ -34,7 +34,7 @@ Thread model: posix
 
 $ rustc --version
 rustc 1.7.0
-]
+
 $ cat Cargo.lock 
 [root]
 name = "bench-maps"

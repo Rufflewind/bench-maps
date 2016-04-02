@@ -16,6 +16,8 @@ expected, so on the semilogx plot it should appear as a rising straight line.
 For hash maps, the constant complexity is expected, so it should
 appear as a flat horizontal line.
 
+Here is some [actual data](data):
+
 ![Plot of average time taken per insert in nanoseconds against the total
   number of elements inserted.](data/plot.png)
 
