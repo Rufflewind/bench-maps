@@ -1,0 +1,8 @@
+[package]
+name = "bench-maps"
+version = "0.1.0"
+authors = ["rf"]
+
+[dependencies]
+time = "*"
+rand = "*"
