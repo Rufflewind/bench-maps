@@ -34,10 +34,6 @@ bad.
 The data for fewer than 64 elements are not included as the results are not
 very accurate and probably inflated due to overhead.
 
-I was originally going to compare against SQLite3 as well, but it's like an
-order of magnitude slower so not really worth it.  The SQLite code is still
-left in the source code though.
-
 If you see any errors in the code or have any suggestions that can improve the
 quality of the results, feel free to submit a bug report or pull request!
 
