@@ -18,26 +18,31 @@ appear as a flat horizontal line.
 
 Here is some [actual data](data):
 
+![Plot of average time taken per lookup in nanoseconds against the total
+  number of elements inserted.](data/plot-lookup.png)
+
 ![Plot of average time taken per insert in nanoseconds against the total
-  number of elements inserted.](data/plot.png)
+  number of elements inserted.](data/plot-insert.png)
 
-In reality, it's not quite so simple.  For tree maps, there seems to be a
-baseline overhead of around 100 ns.  Above a certain number of elements, the
-logarithmic behavior surpasses the baseline overhead.  For hash maps, the time
-taken does increase slightly as the number of elements increases.
+"Hits" occur when the lookup succeeds, or when the insertion replaces an
+existing item.  "Misses" occur the lookup fails, or when the insertion adds a
+new element.
 
-This is probably due to the hashtable resizing, which occurs rather frequently
-in the tests since the number of elements is doubled each time.  In a more
-realistic situation where the resizes are infrequent, this would not be as
-bad.
+The data has been binned and averaged along the size axis to reduce the noise.
+However, this means that local variations are somewhat suppressed.  This
+wouldn't be a too bad if the time was actually a smooth function of size, but
+in reality that's not the case (notice the spikes), so we try to keep the bin
+relatively small.
 
-The data for fewer than 64 elements are not included as the results are not
-very accurate and probably inflated due to overhead.
+The cost due to the random number generator (a few tens of nanoseconds) has
+been subtracted off.  The shaded region denotes the uncertainty: the lightly
+shaded region shows plus or minus the standard deviation of the mean, while
+the the darker region shows plus or minus half of that.
+
+The huge periodic spikes are the result of the hash table getting filled up
+and thus causing a resize, which causes all the elements to be copied.  In
+contrast, trees generally do not have this behavior (except in a few rare
+places, for reasons unknown).
 
 If you see any errors in the code or have any suggestions that can improve the
 quality of the results, feel free to submit a bug report or pull request!
-
-Known limitations:
-
-  - Rust and C++ use different random number generators (RNGs).
-  - The time needed to generate a RNG might not insignificant.
