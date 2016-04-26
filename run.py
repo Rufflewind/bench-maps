@@ -161,10 +161,12 @@ def bench(program, nmax, repeats, count):
     }
 
 def main_bench(program):
-    REPEATS = 3
-    MAX_SIZE = 500000
+    REPEATS = 3 # don't make this too big or most data will get discarded
+    NMAX_MIN = 16
+    NMAX_MAX = 500000
+    NMAX_COUNT = 100
 
-    nmaxs = list(map(int, logrange(16, MAX_SIZE, 100)))
+    nmaxs = list(map(int, logrange(NMAX_MIN, NMAX_MAX, NMAX_COUNT)))
     print("nmaxs:", nmaxs)
     for nmax in nmaxs:
         repeats = REPEATS
@@ -193,8 +195,10 @@ def main_analyze():
     # minimum number of measurements needed
     # otherwise we don't include it
     MIN_COUNT = 8
-    MAX_SIZE = 500000
-    SIZE_BINS = np.array(sorted(set(map(int, logrange(8, MAX_SIZE, 100)))))
+    SIZE_MIN = 8
+    SIZE_MAX = 500000
+    NUM_BINS = 100
+    SIZE_BINS = np.array(sorted(set(map(int, logrange(SIZE_MIN, SIZE_MAX, NUM_BINS)))))
     print("SIZE_BINS:", SIZE_BINS)
 
     size_bins = SIZE_BINS
@@ -273,10 +277,11 @@ def main_analyze():
 
 def main_plot():
     import pandas as pd
-    PLOT_MIN = False # min vs mean
+    PLOT_MIN = True # min vs mean
     SUBTRACT_RNG = True
     ERR_BARS = True
     LOG_Y = False
+    T_RNG_FIELD = "mean"
     COLORS = {
         "BTreeMap": "#e91e63",
         "HashMap": "#f29312",
@@ -312,7 +317,7 @@ def main_plot():
     }
     if SUBTRACT_RNG:
         def get_time(t, method):
-            return t - j["t_rng"][method_to_lang[method]]["mean"]
+            return t - j["t_rng"][method_to_lang[method]][T_RNG_FIELD]
     else:
         def get_time(t, method):
             return t
@@ -350,7 +355,8 @@ def main_plot():
                 )
         if not SUBTRACT_RNG:
             for lang, r in j["t_rng"].items():
-                ax.axhline(r["mean"], label="rng:" + lang,
+                ax.axhline(r[T_RNG_FIELD],
+                           label="rng:" + lang,
                            linestyle=":",
                            color=RNGCOLORS[lang])
         ax.set_xlim(min(d["size"]), max(d["size"]))

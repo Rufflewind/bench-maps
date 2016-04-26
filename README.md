@@ -19,6 +19,15 @@ Here is some [actual data](data):
 ![Plot of average time taken per insert in nanoseconds against the total
   number of elements inserted.](data/plot-insert.png)
 
+If you only plot the minimum instead of average time, the fluctuations are
+eliminated, showing purely the global behavior of the algorithm:
+
+![Plot of minimum time taken per lookup in nanoseconds against the total
+  number of elements inserted.](data/plot-lookup-min.png)
+
+![Plot of minimum time taken per insert in nanoseconds against the total
+  number of elements inserted.](data/plot-insert-min.png)
+
 ## Summary
 
   - `BTreeMap` is remarkably good and competitive with `HashMap` until about a
@@ -72,3 +81,59 @@ Lastly, I also needed to make sure the results of lookups are be consumed
 somehow, otherwise the compiler might optimize out the load from memory.  To
 mitigate this I did a dummy operation: the result of each lookup is added to a
 running total, and the total is printed at the very end.
+
+## How to reproduce the data
+
+The `run.py` script does much of the data analysis.  If all you want to do is
+to reproduce the plot displayed in this README, you can run
+
+~~~sh
+ln -s data/analysis_n100.json analysis.json
+./run.py plot
+~~~
+
+and then look at the files in the `plots` directory.  Keep in mind you
+probably need a few Python packages to run it (`numpy`, `matplotlib`,
+`pandas`).
+
+Be aware that the code has lots of sharp edges.  It's not really designed to
+be easy to use.  It also uses a few platform-specific things (most notably
+`clock_gettime`, which AFAIK doesn't exist on Macs or Windows).
+
+The general workflow is:
+
+ 1. Build the code:
+
+    ~~~sh
+    c++ -std=c++11 -O3 bench.cpp
+    cargo build --release
+    ~~~
+
+ 2. Run the benchmarks:
+
+    ~~~sh
+    ./run.py bench ./a.out
+    ./run.py bench target/release/bench-maps
+    ~~~
+
+    This saves the data to the `raw_data` directory.
+
+ 3. Distill and analyze the data:
+
+    ~~~sh
+    ./run.py analyze
+    ~~~
+
+    The results are saved to `analysis.json`.
+
+ 4. Plot the data:
+
+    ~~~sh
+    ./run.py plot
+    ~~~
+
+    The plots are stored in the `plots` directory.
+
+The scripts has a few customizable variables named using the `ALL_CAPS`
+convention.  Feel free to adjust them change the range and/or quality of the
+data.
